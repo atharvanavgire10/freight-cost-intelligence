@@ -1,0 +1,13 @@
+{
+  "model": null,
+  "provider": null,
+  "hosted_llm_calls": 0,
+  "total_input_tokens": 0,
+  "total_output_tokens": 0,
+  "pricing_source_or_assumption": "No hosted LLM, embedding model, or paid API is used.",
+  "estimated_total_cost": 0.0,
+  "currency": "USD",
+  "measurement_method": "Exact count of hosted calls in deterministic pipeline.",
+  "counts_are": "actual",
+  "local_retrieval": "Deterministic rule-based note filtering; no tokenized inference."
+}

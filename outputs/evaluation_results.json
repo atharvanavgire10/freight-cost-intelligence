@@ -1,0 +1,49 @@
+{
+  "cases_evaluated": 7,
+  "passed": 7,
+  "failed": 0,
+  "details": [
+    {
+      "case": "flood_supported",
+      "expected_note_id": "N001",
+      "actual_note_id": "N001",
+      "passed": true
+    },
+    {
+      "case": "flood_outside_window",
+      "expected_note_id": null,
+      "actual_note_id": null,
+      "passed": true
+    },
+    {
+      "case": "festival_supported",
+      "expected_note_id": "N002",
+      "actual_note_id": "N002",
+      "passed": true
+    },
+    {
+      "case": "nationwide_supported",
+      "expected_note_id": "N003",
+      "actual_note_id": "N003",
+      "passed": true
+    },
+    {
+      "case": "maintenance_negative",
+      "expected_note_id": null,
+      "actual_note_id": null,
+      "passed": true
+    },
+    {
+      "case": "recovery_negative",
+      "expected_note_id": null,
+      "actual_note_id": null,
+      "passed": true
+    },
+    {
+      "case": "wrong_route",
+      "expected_note_id": null,
+      "actual_note_id": null,
+      "passed": true
+    }
+  ]
+}

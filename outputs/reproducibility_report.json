@@ -1,0 +1,28 @@
+{
+  "input_hashes": {
+    "shipment_records.csv": "1a2b4d66c4dc694111ba37b966486b5b0650df9ec8687402f3434117b140f4b6",
+    "context_notes.csv": "875c57a896ac3dfac0f712f8865b287bb5d2bd5423d26e798297b74dce87e6dc"
+  },
+  "configuration": {
+    "threshold_percent": 20.0,
+    "own_history_weeks": 8,
+    "week_start": "Monday",
+    "hosted_llm": false
+  },
+  "run_status": [
+    "success",
+    "success",
+    "success"
+  ],
+  "output_hashes": {
+    "run1.csv": "020919558ad2f3ce53e517f7b8af21efb17c5b91fdd8afadc710e47fa48ad0c3",
+    "run2.csv": "020919558ad2f3ce53e517f7b8af21efb17c5b91fdd8afadc710e47fa48ad0c3",
+    "run3.csv": "020919558ad2f3ce53e517f7b8af21efb17c5b91fdd8afadc710e47fa48ad0c3"
+  },
+  "exact_comparison_results": {
+    "run1_equals_run2": true,
+    "run2_equals_run3": true,
+    "all_identical": true
+  },
+  "differences": []
+}
