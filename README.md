@@ -39,9 +39,9 @@ Percentage comparisons use `100 * (current / baseline - 1)`. The documented impl
 
 ## Evidence validation
 
-Retrieval is intentionally lightweight and local: every note is checked deterministically for route scope, effective-window overlap, positive cost impact wording, and exclusion terms. Route-specific evidence outranks nationwide evidence, then ties resolve by newest effective date and note ID. The parser applies the explicit Chennai--Bangalore flood window (2025-02-24 through 2025-03-08), the Ahmedabad--Mumbai festival week, and the ongoing nationwide diesel-price change from its documented start.
+Retrieval is intentionally lightweight and local. It first finds notes that are plausible cost drivers by validating route scope, effective-window overlap, positive cost-impact wording, and exclusion terms. It then applies a separate sufficiency check before issuing a justified verdict. Route-specific evidence outranks nationwide evidence, then ties resolve by newest effective date and note ID. Effective windows are parsed from note language (explicit date ranges, one-week events, and “starting this week”), not from note IDs.
 
-Notes describing unaffected costs, absorbed costs, stable conditions, improved conditions, or recovery are never evidence for an increase. Therefore toll, maintenance, recovery, and stable-demand notes cannot justify a verdict. Semantic similarity by itself is not evidence.
+Notes describing unaffected costs, absorbed costs, stable conditions, improved conditions, or recovery are never evidence for an increase. Therefore toll, maintenance, recovery, and stable-demand notes cannot justify a verdict. Semantic similarity by itself is not evidence. A nationwide note can identify a general driver, but it is not proof of a route-specific premium. When a note states a maximum impact, the pipeline will not use it to justify a larger observed increase; it leaves the residual unexplained instead of inventing a causal allocation.
 
 Verdicts are deliberately separate from numerical detection:
 
@@ -61,11 +61,11 @@ Dates are ISO dates; numeric display rounds cost to two decimals and percentages
 
 ## Validation results
 
-The checked-in run generated 728 route-week rows, with 20 numerical anomalies. `pytest -q` completed with **7 passed** tests. These cover Monday/Sunday boundaries, ratio-of-sums aggregation, no look-ahead history, early-history behavior, peer exclusion, missing/zero baselines, invalid data, route/date/nationwide note matching, negative/recovery evidence, output mapping, and deterministic output.
+The checked-in run generated 728 route-week rows, with 20 numerical anomalies. Three rows are justified by direct, in-window route evidence (one Ahmedabad--Mumbai surcharge and two Chennai--Bangalore flood weeks); the 13 Mumbai--Pune N003 rows are flagged for review because its stated 5--7% nationwide effect does not establish their 20.6--38.9% peer premiums. `pytest -q` completed with **9 passed** tests. These cover Monday/Sunday boundaries, ratio-of-sums aggregation, no look-ahead history, early-history behavior, peer exclusion, missing/zero baselines, invalid data, N003 effective date and nationwide scope, the plausible-versus-sufficient distinction, negative/recovery evidence, output mapping, and deterministic output.
 
-`outputs/evaluation_results.json` contains 7 manually reviewed evidence cases: flood/festival/nationwide support, out-of-window, wrong-route, maintenance-negative, and recovery-negative cases. Actual result: **7 passed, 0 failed**.
+`outputs/evaluation_results.json` contains 8 manually reviewed evidence cases, including N003 before its effective date and an N003 plausible-but-insufficient residual. Actual fixture result: **8 passed, 0 failed**. It also audits every justified output row against the current route/date/scope/sufficiency logic.
 
-`python -m src.validate_submission` performed three untouched full pipeline runs. All generated a SHA-256 of `020919558ad2f3ce53e517f7b8af21efb17c5b91fdd8afadc710e47fa48ad0c3`; the exact comparison result is true for every pair. Full input/output hashes and configuration are in `outputs/reproducibility_report.json`.
+`python -m src.validate_submission` performed three untouched full pipeline runs. All generated a SHA-256 of `b106515b342a62d23bd2e7b4ae2a5cc5669ed43b9fa486476f2e4a047dbd6073`; the exact comparison result is true for every pair. Full input/output hashes and configuration are in `outputs/reproducibility_report.json`.
 
 ## Cost and limitations
 

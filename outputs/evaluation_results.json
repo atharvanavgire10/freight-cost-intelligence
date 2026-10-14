@@ -1,49 +1,99 @@
 {
-  "cases_evaluated": 7,
-  "passed": 7,
+  "cases_evaluated": 8,
+  "passed": 8,
   "failed": 0,
   "details": [
     {
       "case": "flood_supported",
-      "expected_note_id": "N001",
-      "actual_note_id": "N001",
+      "expected_plausible_note_id": "N001",
+      "actual_plausible_note_id": "N001",
+      "expected_sufficient_note_id": "N001",
+      "actual_sufficient_note_id": "N001",
       "passed": true
     },
     {
       "case": "flood_outside_window",
-      "expected_note_id": null,
-      "actual_note_id": null,
+      "expected_plausible_note_id": null,
+      "actual_plausible_note_id": null,
+      "expected_sufficient_note_id": null,
+      "actual_sufficient_note_id": null,
       "passed": true
     },
     {
       "case": "festival_supported",
-      "expected_note_id": "N002",
-      "actual_note_id": "N002",
+      "expected_plausible_note_id": "N002",
+      "actual_plausible_note_id": "N002",
+      "expected_sufficient_note_id": "N002",
+      "actual_sufficient_note_id": "N002",
       "passed": true
     },
     {
-      "case": "nationwide_supported",
-      "expected_note_id": "N003",
-      "actual_note_id": "N003",
+      "case": "diesel_before_effective_date",
+      "expected_plausible_note_id": null,
+      "actual_plausible_note_id": null,
+      "expected_sufficient_note_id": null,
+      "actual_sufficient_note_id": null,
+      "passed": true
+    },
+    {
+      "case": "diesel_plausible_but_insufficient_residual",
+      "expected_plausible_note_id": "N003",
+      "actual_plausible_note_id": "N003",
+      "expected_sufficient_note_id": null,
+      "actual_sufficient_note_id": null,
       "passed": true
     },
     {
       "case": "maintenance_negative",
-      "expected_note_id": null,
-      "actual_note_id": null,
+      "expected_plausible_note_id": null,
+      "actual_plausible_note_id": null,
+      "expected_sufficient_note_id": null,
+      "actual_sufficient_note_id": null,
       "passed": true
     },
     {
       "case": "recovery_negative",
-      "expected_note_id": null,
-      "actual_note_id": null,
+      "expected_plausible_note_id": null,
+      "actual_plausible_note_id": null,
+      "expected_sufficient_note_id": null,
+      "actual_sufficient_note_id": null,
       "passed": true
     },
     {
       "case": "wrong_route",
-      "expected_note_id": null,
-      "actual_note_id": null,
+      "expected_plausible_note_id": null,
+      "actual_plausible_note_id": null,
+      "expected_sufficient_note_id": null,
+      "actual_sufficient_note_id": null,
       "passed": true
     }
-  ]
+  ],
+  "justified_output_audit": {
+    "rows_audited": 3,
+    "passed": 3,
+    "failed": 0,
+    "details": [
+      {
+        "route": "Ahmedabad-Mumbai",
+        "week_of": "2025-01-20",
+        "matched_note_id": "N002",
+        "expected_sufficient_note_id": "N002",
+        "passed": true
+      },
+      {
+        "route": "Chennai-Bangalore",
+        "week_of": "2025-02-24",
+        "matched_note_id": "N001",
+        "expected_sufficient_note_id": "N001",
+        "passed": true
+      },
+      {
+        "route": "Chennai-Bangalore",
+        "week_of": "2025-03-03",
+        "matched_note_id": "N001",
+        "expected_sufficient_note_id": "N001",
+        "passed": true
+      }
+    ]
+  }
 }
