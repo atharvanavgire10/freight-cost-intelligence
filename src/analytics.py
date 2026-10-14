@@ -7,6 +7,17 @@ import pandas as pd
 ROUTE_KEYS = ["origin", "destination", "route_type"]
 
 
+def validate_threshold(threshold_percent: float) -> float:
+    """Validate the configurable increase threshold before calculations begin."""
+    try:
+        threshold = float(threshold_percent)
+    except (TypeError, ValueError) as error:
+        raise ValueError("threshold must be a finite non-negative percentage") from error
+    if not np.isfinite(threshold) or threshold < 0:
+        raise ValueError("threshold must be a finite non-negative percentage")
+    return threshold
+
+
 def monday_of_week(dates: pd.Series) -> pd.Series:
     normalized = pd.to_datetime(dates, errors="raise").dt.normalize()
     return normalized - pd.to_timedelta(normalized.dt.weekday, unit="D")
@@ -20,6 +31,7 @@ def percentage_change(current: float, baseline: float | None) -> float:
 
 def build_weekly_metrics(shipments: pd.DataFrame, threshold_percent: float = 20.0) -> pd.DataFrame:
     """Aggregate weekly costs and calculate no-look-ahead own and peer comparisons."""
+    threshold_percent = validate_threshold(threshold_percent)
     data = shipments.copy()
     data["week_of"] = monday_of_week(data["shipment_date"])
     data["tonne_km"] = data["quantity_tonnes"] * data["distance_km"]

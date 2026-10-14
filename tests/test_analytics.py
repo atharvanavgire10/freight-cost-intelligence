@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from src.analytics import build_weekly_metrics, monday_of_week, percentage_change
+from src.analytics import build_weekly_metrics, monday_of_week, percentage_change, validate_threshold
 from src.load_data import load_inputs
 
 
@@ -39,4 +39,20 @@ def test_invalid_input_is_rejected_and_reported(tmp_path):
     shipments([["a", "A", "B", "Short", "x", 0, 1, 1, "2024-01-01", "t"]]).to_csv(shipment, index=False)
     pd.DataFrame([["N", "2024-01-01", "All Routes", "costs rose"]], columns=["note_id", "date", "applies_to", "note"]).to_csv(notes, index=False)
     with pytest.raises(ValueError, match="Invalid shipment"):
+        load_inputs(shipment, notes)
+
+
+@pytest.mark.parametrize("value", [-1, float("nan"), float("inf"), "not-a-number"])
+def test_invalid_thresholds_are_rejected(value):
+    with pytest.raises(ValueError, match="finite non-negative"):
+        validate_threshold(value)
+
+
+def test_duplicate_shipment_ids_are_rejected(tmp_path):
+    shipment = tmp_path / "shipment.csv"
+    notes = tmp_path / "notes.csv"
+    rows = [["duplicate", "A", "B", "Short", "x", 1, 1, 1, "2024-01-01", "t"]] * 2
+    shipments(rows).to_csv(shipment, index=False)
+    pd.DataFrame([["N", "2024-01-01", "All Routes", "costs rose"]], columns=["note_id", "date", "applies_to", "note"]).to_csv(notes, index=False)
+    with pytest.raises(ValueError, match="Duplicate shipment_id"):
         load_inputs(shipment, notes)

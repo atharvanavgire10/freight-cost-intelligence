@@ -51,15 +51,20 @@ def load_inputs(shipment_path: Path, notes_path: Path) -> LoadedData:
         | (shipments["freight_cost_inr"] < 0)
         | ~shipments["route_type"].isin(VALID_ROUTE_TYPES)
     )
+    duplicate_shipment_ids = shipments["shipment_id"].duplicated(keep=False)
     report = {
         "shipment_rows_read": int(len(shipments)),
         "note_rows_read": int(len(notes)),
         "invalid_shipment_rows": int(invalid.sum()),
+        "duplicate_shipment_ids": int(duplicate_shipment_ids.sum()),
         "missing_values": {column: int(value) for column, value in shipments.isna().sum().items()},
     }
     if invalid.any():
         examples = shipments.index[invalid].tolist()[:10]
         raise ValueError(f"Invalid shipment records at CSV row indexes {examples}; no records were discarded.")
+    if duplicate_shipment_ids.any():
+        examples = shipments.loc[duplicate_shipment_ids, "shipment_id"].head(10).tolist()
+        raise ValueError(f"Duplicate shipment_id values found: {examples}; no records were discarded.")
     if notes[["note_id", "date", "applies_to", "note"]].isna().any().any():
         raise ValueError("context_notes.csv contains missing required values.")
     return LoadedData(shipments=shipments, notes=notes, quality_report=report)

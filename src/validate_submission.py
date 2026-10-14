@@ -63,6 +63,8 @@ def main() -> None:
     (output_dir / "evaluation_results.json").write_text(json.dumps(evaluation, indent=2) + "\n", encoding="utf-8")
     token_log = {"model": None, "provider": None, "hosted_llm_calls": 0, "total_input_tokens": 0, "total_output_tokens": 0, "pricing_source_or_assumption": "No hosted LLM, embedding model, or paid API is used.", "estimated_total_cost": 0.0, "currency": "USD", "measurement_method": "Exact count of hosted calls in deterministic pipeline.", "counts_are": "actual", "local_retrieval": "Deterministic rule-based note filtering; no tokenized inference."}
     (output_dir / "token_cost_log.json").write_text(json.dumps(token_log, indent=2) + "\n", encoding="utf-8")
+    if evaluation["failed"] or evaluation["justified_output_audit"]["failed"]:
+        raise SystemExit("Submission evaluation or justified-output audit failed; inspect evaluation_results.json.")
     print(json.dumps({"runs": summaries, "evaluation": evaluation, "reproducible": reproducibility["exact_comparison_results"]["all_identical"]}, indent=2))
 
 

@@ -54,14 +54,29 @@ def find_plausible_note(notes: pd.DataFrame, route: str, week_of: pd.Timestamp) 
     return sorted(candidates, key=lambda candidate: (-candidate[0], -candidate[1].value, candidate[2]))[0][3]
 
 
+def has_conflicting_note(notes: pd.DataFrame, route: str, week_of: pd.Timestamp, selected_note_id: str) -> bool:
+    """Detect an overlapping applicable note that explicitly contradicts a cost increase."""
+    week_of = pd.Timestamp(week_of).normalize()
+    week_end = week_of + pd.Timedelta(days=6)
+    for _, note in notes.iterrows():
+        if str(note["note_id"]) == selected_note_id or str(note["applies_to"]) not in {route, "All Routes"}:
+            continue
+        start, end = note_window(note)
+        if start <= week_end and end >= week_of and any(term in str(note["note"]).lower() for term in NEGATIVE_TERMS):
+            return True
+    return False
+
+
 def _positive_changes(row: pd.Series) -> list[float]:
     return [float(value) for value in (row.get("vs_own_history_percent"), row.get("vs_similar_routes_percent")) if value is not None and not pd.isna(value) and value > 0]
 
 
-def evidence_gap(note: pd.Series, row: pd.Series) -> str | None:
+def evidence_gap(note: pd.Series, row: pd.Series, notes: pd.DataFrame | None = None) -> str | None:
     """Return why a plausible note cannot prove this anomaly, else ``None``."""
     stated_maximum = stated_maximum_impact_percent(note)
     observed = _positive_changes(row)
+    if notes is not None and has_conflicting_note(notes, str(row["route"]), pd.Timestamp(row["week_of"]), str(note["note_id"])):
+        return "an overlapping applicable note explicitly says costs were unaffected or normal"
     if str(note["applies_to"]) == "All Routes":
         if stated_maximum is None:
             return "the nationwide note does not quantify an impact large enough to explain this route-specific anomaly"
@@ -77,7 +92,7 @@ def evidence_gap(note: pd.Series, row: pd.Series) -> str | None:
 def find_sufficient_note(notes: pd.DataFrame, row: pd.Series) -> pd.Series | None:
     """Return evidence that is plausible *and* sufficient for a justified verdict."""
     note = find_plausible_note(notes, str(row["route"]), pd.Timestamp(row["week_of"]))
-    return note if note is not None and evidence_gap(note, row) is None else None
+    return note if note is not None and evidence_gap(note, row, notes) is None else None
 
 
 def explanation_for(row: pd.Series, notes: pd.DataFrame) -> tuple[str, str, str]:
@@ -89,5 +104,5 @@ def explanation_for(row: pd.Series, notes: pd.DataFrame) -> tuple[str, str, str]
     if sufficient is not None:
         return "No (justified)", str(sufficient["note_id"]), f"Matches note {sufficient['note_id']} dated {pd.Timestamp(sufficient['date']).date()}: {sufficient['note']}"
     if plausible is not None:
-        return "Yes", "", f"Note {plausible['note_id']} is a plausible cost driver, but it is insufficient to justify this anomaly: {evidence_gap(plausible, row)}. Flagged for human review."
+        return "Yes", "", f"Note {plausible['note_id']} is a plausible cost driver, but it is insufficient to justify this anomaly: {evidence_gap(plausible, row, notes)}. Flagged for human review."
     return "Yes", "", "Numerical anomaly detected, but no route- and date-matched explanation was found; flagged for human review."

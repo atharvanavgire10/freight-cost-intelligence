@@ -1,6 +1,7 @@
 import pandas as pd
+import pytest
 
-from src.pipeline import OUTPUT_COLUMNS, make_output, run
+from src.pipeline import OUTPUT_COLUMNS, make_output, run, validate_output
 
 
 def test_output_schema_reason_and_determinism(tmp_path):
@@ -19,3 +20,13 @@ def test_output_schema_reason_and_determinism(tmp_path):
     assert list(result.columns) == OUTPUT_COLUMNS
     assert result.loc[result.week_of == "2024-01-08", "flagged"].iloc[0] == "No (justified)"
     assert first.read_bytes() == second.read_bytes()
+
+
+def test_output_validator_rejects_invalid_verdict_and_evidence_reference(tmp_path):
+    output = tmp_path / "invalid.csv"
+    pd.DataFrame([["A-B", "2024-01-01", "1.00", "", "", "Maybe", "N404", "invalid"]], columns=OUTPUT_COLUMNS).to_csv(output, index=False)
+    with pytest.raises(ValueError, match="invalid flagged"):
+        validate_output(output, {"N001"})
+    pd.DataFrame([["A-B", "2024-01-01", "1.00", "", "", "No (justified)", "N404", "invalid"]], columns=OUTPUT_COLUMNS).to_csv(output, index=False)
+    with pytest.raises(ValueError, match="do not exist"):
+        validate_output(output, {"N001"})
